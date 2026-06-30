@@ -48,7 +48,7 @@
     <lib-linked-data-rdf4ld.version>2.0.0-SNAPSHOT</lib-linked-data-rdf4ld.version>
 
     <!-- Dependencies versions -->
-    <hypersistence-utils-hibernate>3.15.3</hypersistence-utils-hibernate>
+    <hypersistence-utils-hibernate>3.15.4</hypersistence-utils-hibernate>
     <apache-commons-io.version>2.22.0</apache-commons-io.version>
     <apache-commons-collections.version>4.5.0</apache-commons-collections.version>
     <apache-commons-csv.version>1.14.1</apache-commons-csv.version>
