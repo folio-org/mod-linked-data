@@ -169,7 +169,7 @@ class ProfileSettingsIT {
     var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors())
       .extracting("code")
-      .contains("profile_settings_name_not_unique");;
+      .contains("profile_settings_name_not_unique");
   }
 
   @Test
