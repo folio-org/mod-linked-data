@@ -96,7 +96,7 @@ class ProfileControllerIT {
   @Test
   void getMetadataByResourceType_returnsMetadataForAuthority() throws Exception {
     //given
-    var requestBuilder = get(PROFILE_URL + "/metadata?resourceType=Authority")
+    var requestBuilder = get(PROFILE_URL + "/metadata?resourceType=http://bibfra.me/vocab/lite/Authority")
       .headers(defaultHeaders(env));
 
     //when
