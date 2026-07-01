@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Array of custom profile settings metadata",
+  "type": "array",
+  "items": {
+    "$ref": "customProfileSettingsMetadata.json"
+  }
+}

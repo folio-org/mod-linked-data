@@ -1,11 +1,17 @@
 package org.folio.linked.data.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.CustomProfileSettingsMetadata;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsRequestDto;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsResponseDto;
 import org.folio.linked.data.domain.dto.PreferredProfileRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
+import org.folio.linked.data.model.CreateProfileSettingsRequest;
 import org.folio.linked.data.rest.resource.ProfileApi;
 import org.folio.linked.data.service.profile.PreferredProfileService;
 import org.folio.linked.data.service.profile.ProfileService;
@@ -20,6 +26,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileService profileService;
   private final PreferredProfileService preferredProfileService;
   private final ProfileSettingsService profileSettingsService;
+  private final jakarta.validation.Validator validator;
 
   @Override
   public ResponseEntity<String> getProfileById(Integer profileId) {
@@ -49,15 +56,52 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  public ResponseEntity<CustomProfileSettingsResponseDto> getProfileSettings(Integer profileId) {
-    return ResponseEntity.ok(profileSettingsService.getProfileSettings(profileId));
+  public ResponseEntity<List<CustomProfileSettingsMetadata>> getAllProfileSettings(Integer profileId) {
+    return ResponseEntity.ok(profileSettingsService.getAllProfileSettings(profileId));
+  }
+
+  @Override
+  public ResponseEntity<CustomProfileSettingsResponseDto> getProfileSettings(
+    Integer profileId,
+    Integer profileSettingsId
+  ) {
+    return ResponseEntity.ok(profileSettingsService.getProfileSettings(profileId, profileSettingsId));
+  }
+
+  @Override
+  public ResponseEntity<CustomProfileSettingsMetadata> createProfileSettings(
+      Integer profileId,
+      @Valid CustomProfileSettingsRequestDto profileSettingsRequest) {
+    var wrappedRequest = new CreateProfileSettingsRequest(profileId, profileSettingsRequest);
+    validateCreateProfileSettingsRequest(wrappedRequest);
+
+    return ResponseEntity
+      .status(CREATED)
+      .body(profileSettingsService.createProfileSettings(profileId, profileSettingsRequest));
   }
 
   @Override
   public ResponseEntity<Void> setProfileSettings(
       Integer profileId,
+      Integer profileSettingsId,
       CustomProfileSettingsRequestDto profileSettingsRequest) {
-    profileSettingsService.setProfileSettings(profileId, profileSettingsRequest);
+    profileSettingsService.setProfileSettings(profileId, profileSettingsId, profileSettingsRequest);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteProfileSettings(
+      Integer profileId,
+      Integer profileSettingsId
+  ) {
+    profileSettingsService.deleteProfileSettings(profileId, profileSettingsId);
+    return ResponseEntity.noContent().build();
+  }
+
+  private void validateCreateProfileSettingsRequest(CreateProfileSettingsRequest request) {
+    var violations = validator.validate(request);
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
+    }
   }
 }
