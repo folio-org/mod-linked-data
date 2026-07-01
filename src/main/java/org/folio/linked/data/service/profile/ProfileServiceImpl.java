@@ -33,7 +33,7 @@ import tools.jackson.databind.JsonNode;
 @Transactional(readOnly = true)
 public class ProfileServiceImpl implements ProfileService {
   private static final String PROFILES_PATTERN = "classpath*:profiles/*.json";
-  private static final String AUTHORITY_META_TYPE = "Authority";
+  private static final String AUTHORITY_META_TYPE = "http://bibfra.me/vocab/lite/Authority";
   private final ProfileRepository profileRepository;
   private final ResourceTypeRepository typeRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
