@@ -934,7 +934,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(place.getLabel()).isEqualTo(expectedLabel);
     assertThat(place.getTypes().iterator().next().getUri()).isEqualTo(PLACE.getUri());
     assertThat(place.getId()).isEqualTo(hashService.hash(place));
-    assertThat(place.getDoc().size()).isEqualTo(3);
+    assertThat(place.getDoc().size()).isEqualTo(4);
     assertThat(place.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(CODE.getValue()).get(0).asString()).isEqualTo(expectedCode);
     assertThat(place.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
@@ -942,6 +942,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(LINK.getValue()).get(0).asString()).isEqualTo(
       "http://id.loc.gov/vocabulary/countries/" + expectedCode);
+    assertThat(place.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
 

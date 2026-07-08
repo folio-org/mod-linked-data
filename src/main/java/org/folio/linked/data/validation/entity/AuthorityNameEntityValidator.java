@@ -2,6 +2,8 @@ package org.folio.linked.data.validation.entity;
 
 import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -12,7 +14,7 @@ public class AuthorityNameEntityValidator implements ConstraintValidator<Authori
 
   @Override
   public boolean isValid(Resource resource, ConstraintValidatorContext context) {
-    if (!resource.isAuthority()) {
+    if (!resource.isAuthority() || resource.isOfType(HUB) || resource.isOfType(CONCEPT)) {
       return true;
     }
     var doc = resource.getDoc();

@@ -3,6 +3,7 @@ package org.folio.linked.data.e2e.batch;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ABBREVIATED_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -12,6 +13,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
@@ -44,7 +46,7 @@ class GraphCleaningReaderIT extends ITBase {
 
       // A resource with FolioMetadata -> ignored
       var resourceWithFolioMetadata = createResource(
-        Map.of(),
+        Map.of(NAME, List.of("resourceWithFolioMetadata")),
         of(PERSON),
         Map.of()
       ).setLabel("resourceWithFolioMetadata");

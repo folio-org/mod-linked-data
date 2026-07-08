@@ -2,6 +2,8 @@ package org.folio.linked.data.validation.entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -21,6 +23,30 @@ class AuthorityNameEntityValidatorTest {
   void shouldReturnTrue_ifGivenResourceIsNotAuthority() {
     // given
     var resource = new Resource().addTypes(ID_ISBN);
+
+    // when
+    boolean result = validator.isValid(resource, null);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void shouldReturnTrue_ifGivenResourceIsHub() {
+    // given
+    var resource = new Resource().addTypes(HUB);
+
+    // when
+    boolean result = validator.isValid(resource, null);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void shouldReturnTrue_ifGivenResourceIsConcept() {
+    // given
+    var resource = new Resource().addTypes(CONCEPT);
 
     // when
     boolean result = validator.isValid(resource, null);

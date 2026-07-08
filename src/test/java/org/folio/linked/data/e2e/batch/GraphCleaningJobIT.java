@@ -4,6 +4,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.test.MonographTestUtil.createResource;
@@ -46,14 +47,14 @@ class GraphCleaningJobIT extends ITBase {
       resourceTestService.saveGraph(getSampleInstanceResource());
       resourceTestService.saveGraph(getSampleHub());
 
-      var personWithMeta = createResource(Map.of(), of(PERSON), emptyMap())
+      var personWithMeta = createResource(Map.of(NAME, List.of("personWithMeta")), of(PERSON), emptyMap())
         .setLabel("personWithMeta");
       var folioMetadata = new FolioMetadata(personWithMeta).setInventoryId("some-inventory-id");
       personWithMeta.setFolioMetadata(folioMetadata);
       resourceTestService.saveGraph(personWithMeta);
 
       var orphanPerson = resourceTestService.saveGraph(
-        createResource(Map.of(), of(PERSON), emptyMap()).setLabel("personWithoutMeta")
+        createResource(Map.of(NAME, List.of("personWithoutMeta")), of(PERSON), emptyMap()).setLabel("personWithoutMeta")
       );
 
       var orphanIdentifierWithStatus = resourceTestService.saveGraph(

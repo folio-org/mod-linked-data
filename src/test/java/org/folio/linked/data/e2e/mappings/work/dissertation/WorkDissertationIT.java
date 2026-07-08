@@ -2,7 +2,9 @@ package org.folio.linked.data.e2e.mappings.work.dissertation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.getOutgoingResources;
 import static org.folio.linked.data.test.TestUtil.getProperty;
 import static org.folio.linked.data.test.TestUtil.validateResourceType;
@@ -16,7 +18,6 @@ import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.test.TestUtil;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,13 +159,12 @@ class WorkDissertationIT extends PostResourceIT {
     assertThat(reference).containsEntry("types", List.of(ResourceTypeDictionary.ORGANIZATION.getUri()));
   }
 
-  @SneakyThrows
   private static Resource createOrganization(Long id, String label, String srsId) {
     var resource = new Resource()
       .addType(new ResourceTypeEntity()
         .setHash(ResourceTypeDictionary.ORGANIZATION.getHash())
         .setUri(ResourceTypeDictionary.ORGANIZATION.getUri()))
-      .setDoc(TestUtil.TEST_JSON_MAPPER.readTree("{}"))
+      .setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(label))))
       .setLabel(label)
       .setIdAndRefreshEdges(id);
     if (srsId != null) {

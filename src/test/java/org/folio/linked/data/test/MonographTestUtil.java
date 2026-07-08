@@ -1331,7 +1331,8 @@ public class MonographTestUtil {
       Map.of(
         CODE, List.of(code),
         LABEL, List.of(label),
-        LINK, List.of("http://id.loc.gov/vocabulary/countries/" + code)
+        LINK, List.of("http://id.loc.gov/vocabulary/countries/" + code),
+        NAME, List.of(label)
       ),
       Set.of(PLACE),
       emptyMap()

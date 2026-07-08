@@ -35,6 +35,9 @@
               ],
               "http://bibfra.me/vocab/lite/label": [
                 "Afghanistan"
+              ],
+              "http://bibfra.me/vocab/lite/name": [
+                "Afghanistan"
               ]
             }
           ],
@@ -60,6 +63,9 @@
                 "http://id.loc.gov/vocabulary/countries/al"
               ],
               "http://bibfra.me/vocab/lite/label": [
+                "Albania"
+              ],
+              "http://bibfra.me/vocab/lite/name": [
                 "Albania"
               ]
             }
@@ -87,6 +93,9 @@
               ],
               "http://bibfra.me/vocab/lite/label": [
                 "Algeria"
+              ],
+              "http://bibfra.me/vocab/lite/name": [
+                "Algeria"
               ]
             }
           ],
@@ -112,6 +121,9 @@
                 "http://id.loc.gov/vocabulary/countries/as"
               ],
               "http://bibfra.me/vocab/lite/label": [
+                "American Samoa"
+              ],
+              "http://bibfra.me/vocab/lite/name": [
                 "American Samoa"
               ]
             }

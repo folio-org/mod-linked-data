@@ -2,8 +2,11 @@ package org.folio.linked.data.service.resource.marc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.linked.data.test.TestUtil.getJsonNode;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
@@ -28,7 +31,7 @@ class ResourceMarcAuthorityServiceIT {
     var srsId = "srs_id_new_01";
     var newResource = new Resource()
       .setId(10L)
-      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
+      .setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("new_label_01"))))
       .setTypes(Set.of(ResourceTypeDictionary.PERSON))
       .setLabel("new_label_01")
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
@@ -47,7 +50,7 @@ class ResourceMarcAuthorityServiceIT {
     // save version 1 of the authority
     var v1Resource = new Resource()
       .setId(1L)
-      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
+      .setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("label_01"))))
       .setTypes(Set.of(ResourceTypeDictionary.PERSON))
       .setLabel("label_01")
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
