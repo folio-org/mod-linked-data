@@ -70,8 +70,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   @Override
   public ImportResponseDto importFile(String filterType, MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
-      var filter = ResourceTypeDictionary.fromUri(filterType).orElse(null);
-      var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), filter, true);
+      var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
@@ -86,8 +85,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   public ImportResponseDto importUrl(String url, String filterType, String defaultWorkType) {
     try (var is = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
       var workType = ResourceTypeDictionary.fromUri(defaultWorkType).orElse(ResourceTypeDictionary.BOOKS);
-      var filter = ResourceTypeDictionary.fromUri(filterType).orElse(null);
-      var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, filter, workType, true);
+      var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, workType, true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (RestClientResponseException e) {
@@ -119,7 +117,7 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
     try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
-      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, null, save);
+      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, save);
       return importReport.getImports().stream()
         .map(ImportedResource::getResourceEntity)
         .filter(Objects::nonNull)
@@ -132,23 +130,20 @@ public class RdfImportServiceImpl implements RdfImportService {
   private ImportReport importInputStream(
     InputStream input,
     String contentType,
-    ResourceTypeDictionary filterType,
     Boolean save
   ) {
-    return importInputStream(input, contentType, filterType, null, save);
+    return importInputStream(input, contentType, null, save);
   }
 
   private ImportReport importInputStream(
     InputStream input,
     String contentType,
-    ResourceTypeDictionary filterType,
     ResourceTypeDictionary workType,
     Boolean save
   ) {
     var resources = rdf4LdService.mapBibframe2RdfToLd(input, contentType);
     var lineNumber = new AtomicLong(1);
     var resourcesWithLineNumbers = resources.stream()
-      .filter(filterType != null ? r -> r.isOfType(filterType) : r -> true)
       .map(r -> assignType(r, workType))
       .map(r -> new ResourceWithLineNumber(lineNumber.getAndIncrement(), r))
       .collect(toSet());
