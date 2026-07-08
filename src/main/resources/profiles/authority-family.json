@@ -35,7 +35,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:FamilyName",
-      "marc": "100/700$a"
+      "marc": "100 3_/700$a"
     },
     {
       "type": "literal",
@@ -50,7 +50,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:Numeration",
-      "marc": "100/700$b"
+      "marc": "100 3_/700$b"
     },
     {
       "type": "literal",
@@ -65,7 +65,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:Titles",
-      "marc": "100/700$c"
+      "marc": "100 3_/700$c"
     },
     {
       "type": "literal",
@@ -80,7 +80,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:Dates",
-      "marc": "100/700$d"
+      "marc": "100 3_/700$d"
     },
     {
       "type": "literal",
@@ -95,7 +95,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:MiscellaneousInformation",
-      "marc": "100/700$g"
+      "marc": "100 3_/700$g"
     },
     {
       "type": "literal",
@@ -110,7 +110,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:AttributionQualifier",
-      "marc": "100/700$j"
+      "marc": "100 3_/700$j"
     },
     {
       "type": "literal",
@@ -125,7 +125,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:FullerFormOfName",
-      "marc": "100/700$q"
+      "marc": "100 3_/700$q"
     },
     {
       "type": "literal",
@@ -155,7 +155,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:NumberOfParts",
-      "marc": "100/700$n"
+      "marc": "100 3_/700$n"
     },
     {
       "type": "dropdown",

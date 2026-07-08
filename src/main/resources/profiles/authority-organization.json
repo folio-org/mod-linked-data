@@ -33,7 +33,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:CorporateName",
-      "marc": "110/710$a"
+      "marc": "110 2_/710$a"
     },
     {
       "type": "literal",
@@ -48,7 +48,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:SubordinateUnit",
-      "marc": "110/710$b"
+      "marc": "110 2_/710$b"
     },
     {
       "type": "literal",
@@ -63,7 +63,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:Location",
-      "marc": "110/710$c"
+      "marc": "110 2_/710$c"
     },
     {
       "type": "literal",
@@ -78,7 +78,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:Date",
-      "marc": "110/710$d"
+      "marc": "110 2_/710$d"
     },
     {
       "type": "literal",
@@ -93,7 +93,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:MiscellaneousInformation",
-      "marc": "110/710$g"
+      "marc": "110 2_/710$g"
     },
     {
       "type": "literal",
@@ -123,7 +123,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Authority:NumberOfParts",
-      "marc": "110/710$n"
+      "marc": "110 2_/710$n"
     },
     {
       "type": "dropdown",
