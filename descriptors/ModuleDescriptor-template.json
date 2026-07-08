@@ -175,14 +175,14 @@
           "permissionsRequired": [ "linked-data.profiles.settings.list.get" ]
         },
         {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/profile/{profileId}/settings",
+          "permissionsRequired": [ "linked-data.profiles.settings.post" ]
+        },
+        {
           "methods": [ "GET" ],
           "pathPattern": "/linked-data/profile/{profileId}/settings/{id}",
           "permissionsRequired": [ "linked-data.profiles.settings.get" ]
-        },
-        {
-          "methods": [ "POST" ],
-          "pathPattern": "/linked-data/profile/{profileId}/settings/{id}",
-          "permissionsRequired": [ "linked-data.profiles.settings.post" ]
         },
         {
           "methods": [ "PUT" ],
