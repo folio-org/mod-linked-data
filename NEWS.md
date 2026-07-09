@@ -3,6 +3,7 @@
 - Standalone Authority resource CRUD API [MODLD-1082](https://folio-org.atlassian.net/browse/MODLD-1082)
 - Authority index message sending [MODLD-1099](https://folio-org.atlassian.net/browse/MODLD-1099)
 - Update profile settings to allow for multiple settings per profile [MODLD-1040](https://folio-org.atlassian.net/browse/MODLD-1040)
+- Update some Authority profile MARC tooltips [MODLD-1083](https://folio-org.atlassian.net/browse/MODLD-1083)
 
 ## 2.0.3 (02-06-2026)
 - Exclude LIGHT_RESOURCE from reindexing [MODLD-1071](https://folio-org.atlassian.net/browse/MODLD-1071)
