@@ -43,6 +43,7 @@ import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.specific.ResourceKind;
 import org.folio.linked.data.configuration.audit.LinkedDataAuditEntityListener;
+import org.folio.linked.data.validation.AuthorityNameConstraint;
 import org.folio.linked.data.validation.InstanceSingleWorkConstraint;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
 import org.folio.linked.data.validation.ResourceTypeConstraint;
@@ -57,6 +58,7 @@ import tools.jackson.databind.JsonNode;
 @Data
 @NoArgsConstructor
 @PrimaryTitleConstraint
+@AuthorityNameConstraint
 @ResourceTypeConstraint
 @InstanceSingleWorkConstraint
 @Accessors(chain = true)

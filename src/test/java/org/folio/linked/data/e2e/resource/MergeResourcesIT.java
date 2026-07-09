@@ -194,12 +194,14 @@ class MergeResourcesIT {
   void shouldMergePerson100MultiValuedSubfields() {
     // given
     resourceGraphService.saveMergingGraph(createPersonResource(1L, Map.of(
+      PropertyDictionary.NAME, List.of("test-person"),
       ATTRIBUTION, List.of("attribution-v1"),
       NAME_ALTERNATIVE, List.of("name-alt-v1")
     )));
 
     // when
     resourceGraphService.saveMergingGraph(createPersonResource(1L, Map.of(
+      PropertyDictionary.NAME, List.of("test-person"),
       ATTRIBUTION, List.of("attribution-v2"),
       NAME_ALTERNATIVE, List.of("name-alt-v2")
     )));
@@ -214,6 +216,7 @@ class MergeResourcesIT {
   void shouldMergeOrganization110MultiValuedSubfields() {
     // given
     resourceGraphService.saveMergingGraph(createOrganizationResource(1L, Map.of(
+      PropertyDictionary.NAME, List.of("test-org"),
       PLACE, List.of("place-v1"),
       AUTHORITY_LINK, List.of("auth-link-v1"),
       EQUIVALENT, List.of("equiv-v1"),
@@ -224,6 +227,7 @@ class MergeResourcesIT {
 
     // when
     resourceGraphService.saveMergingGraph(createOrganizationResource(1L, Map.of(
+      PropertyDictionary.NAME, List.of("test-org"),
       PLACE, List.of("place-v2"),
       AUTHORITY_LINK, List.of("auth-link-v2"),
       EQUIVALENT, List.of("equiv-v2"),
@@ -246,6 +250,7 @@ class MergeResourcesIT {
   void shouldMergeMeeting111MultiValuedSubfields() {
     // given
     resourceGraphService.saveMergingGraph(createMeetingResource(1L, Map.of(
+      PropertyDictionary.NAME, List.of("test-meeting"),
       PLACE, List.of("place-v1"),
       AUTHORITY_LINK, List.of("auth-link-v1"),
       EQUIVALENT, List.of("equiv-v1"),
@@ -256,6 +261,7 @@ class MergeResourcesIT {
 
     // when
     resourceGraphService.saveMergingGraph(createMeetingResource(1L, Map.of(
+      PropertyDictionary.NAME, List.of("test-meeting"),
       PLACE, List.of("place-v2"),
       AUTHORITY_LINK, List.of("auth-link-v2"),
       EQUIVALENT, List.of("equiv-v2"),
