@@ -68,7 +68,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   private FolioMessageProducer<ImportResultEvent> importResultEventProducer;
 
   @Override
-  public ImportResponseDto importFile(String filterType, MultipartFile multipartFile) {
+  public ImportResponseDto importFile(MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
       var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), true);
       var reportCsv = importReport.toCsv();
@@ -82,7 +82,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public ImportResponseDto importUrl(String url, String filterType, String defaultWorkType) {
+  public ImportResponseDto importUrl(String url, String defaultWorkType) {
     try (var is = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
       var workType = ResourceTypeDictionary.fromUri(defaultWorkType).orElse(ResourceTypeDictionary.BOOKS);
       var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, workType, true);
