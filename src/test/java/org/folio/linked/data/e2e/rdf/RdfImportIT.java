@@ -78,8 +78,7 @@ class RdfImportIT extends ITBase {
       "application/ld+json", input);
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -114,8 +113,7 @@ class RdfImportIT extends ITBase {
       "application/ld+json", input);
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
     var expectedId = -6960648989710467939L;
     var existedAuthority = new Resource()
       .setIdAndRefreshEdges(123L)
@@ -154,8 +152,7 @@ class RdfImportIT extends ITBase {
       "application/ld+json", input);
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
     var expectedId = -6960648989710467939L;
 
     // when
@@ -188,8 +185,7 @@ class RdfImportIT extends ITBase {
       getClass().getResourceAsStream("/rdf/instance1_same_work.json"));
     var importResponse1 = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
         .file(instance1File)
-        .headers(defaultHeaders(env))
-        .param("filterType", ""))
+        .headers(defaultHeaders(env)))
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
     var instance1Id = TEST_JSON_MAPPER.readTree(importResponse1).path("resources").get(0).asLong();
@@ -201,8 +197,7 @@ class RdfImportIT extends ITBase {
       getClass().getResourceAsStream("/rdf/instance2_same_work.json"));
     var importResponse2 = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
         .file(instance2File)
-        .headers(defaultHeaders(env))
-        .param("filterType", ""))
+        .headers(defaultHeaders(env)))
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
     var instance2Id = TEST_JSON_MAPPER.readTree(importResponse2).path("resources").get(0).asLong();
@@ -228,8 +223,7 @@ class RdfImportIT extends ITBase {
       getClass().getResourceAsStream("/rdf/instance1_work1.json"));
     mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
         .file(instance1File)
-        .headers(defaultHeaders(env))
-        .param("filterType", ""))
+        .headers(defaultHeaders(env)))
       .andExpect(status().isOk());
     workIndexTopicListener.getMessages().clear();
 
@@ -239,8 +233,7 @@ class RdfImportIT extends ITBase {
       getClass().getResourceAsStream("/rdf/instance1_work1_to_work2.json"));
     var importResponse2 = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
         .file(instance2File)
-        .headers(defaultHeaders(env))
-        .param("filterType", ""));
+        .headers(defaultHeaders(env)));
 
 
     // then
@@ -256,8 +249,7 @@ class RdfImportIT extends ITBase {
       "application/ld+json", "[]".getBytes());
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -278,8 +270,7 @@ class RdfImportIT extends ITBase {
     var multipartFile = new MockMultipartFile("fileName", fileName, "application/ld+json", input);
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -320,8 +311,7 @@ class RdfImportIT extends ITBase {
     var multipartFile = new MockMultipartFile("fileName", fileName, "application/ld+json", input);
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -365,8 +355,7 @@ class RdfImportIT extends ITBase {
       "application/ld+json", input);
     var importRequestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
-      .headers(defaultHeaders(env))
-      .param("filterType", "");
+      .headers(defaultHeaders(env));
 
     // when - import
     var importResultActions = mockMvc.perform(importRequestBuilder);

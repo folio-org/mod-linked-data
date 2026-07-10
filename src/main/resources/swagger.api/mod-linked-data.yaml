@@ -556,8 +556,6 @@ paths:
       tags:
         - import
       description: Imports an uploaded JSON file containing at least one resource
-      parameters:
-        - $ref: '#/components/parameters/filterType'
       requestBody:
         content:
           multipart/form-data:
@@ -587,7 +585,6 @@ paths:
       description: Imports from a URL containing at least one resource
       parameters:
         - $ref: '#/components/parameters/importUrl'
-        - $ref: '#/components/parameters/filterType'
         - $ref: '#/components/parameters/defaultWorkType'
       responses:
         '200':
@@ -731,13 +728,6 @@ components:
       in: query
       required: true
       description: URL of a remote Instance resource
-      schema:
-        type: string
-    filterType:
-      name: filterType
-      in: query
-      required: true
-      description: URI for the type of resource to filter in matches from import contents
       schema:
         type: string
     defaultWorkType:
