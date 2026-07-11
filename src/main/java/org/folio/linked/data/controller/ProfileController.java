@@ -10,10 +10,12 @@ import org.folio.linked.data.domain.dto.CustomProfileSettingsMetadata;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsRequestDto;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsResponseDto;
 import org.folio.linked.data.domain.dto.PreferredProfileRequest;
+import org.folio.linked.data.domain.dto.PreferredProfileSettingsRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.model.CreateProfileSettingsRequest;
 import org.folio.linked.data.rest.resource.ProfileApi;
 import org.folio.linked.data.service.profile.PreferredProfileService;
+import org.folio.linked.data.service.profile.PreferredProfileSettingsService;
 import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.profile.ProfileSettingsService;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ public class ProfileController implements ProfileApi {
   private final ProfileService profileService;
   private final PreferredProfileService preferredProfileService;
   private final ProfileSettingsService profileSettingsService;
+  private final PreferredProfileSettingsService preferredProfileSettingsService;
   private final jakarta.validation.Validator validator;
 
   @Override
@@ -103,5 +106,28 @@ public class ProfileController implements ProfileApi {
     if (!violations.isEmpty()) {
       throw new ConstraintViolationException(violations);
     }
+  }
+
+  @Override
+  public ResponseEntity<List<CustomProfileSettingsMetadata>> getPreferredProfileSettings(Integer profileId) {
+    return ResponseEntity.ok(preferredProfileSettingsService.getPreferredProfileSettings(profileId));
+  }
+
+  @Override
+  public ResponseEntity<Void> setPreferredProfileSettings(
+      Integer profileId,
+      PreferredProfileSettingsRequest preferredProfileSettings
+  ) {
+    preferredProfileSettingsService.setPreferredProfileSettings(
+      profileId,
+      preferredProfileSettings.getProfileSettingsId()
+    );
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> deletePreferredProfileSettings(Integer profileId) {
+    preferredProfileSettingsService.deletePreferredProfileSettings(profileId);
+    return ResponseEntity.noContent().build();
   }
 }

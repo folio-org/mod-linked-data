@@ -505,6 +505,59 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/profile/{profileId}/preferred:
+    get:
+      operationId: getPreferredProfileSettings
+      tags:
+         - profile
+      description: Get the preferred profile settings for the profile
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Preferred profile settings for the profile and current user
+          content:
+            application/json:
+              schema:
+                $ref: "schema/profile/customProfileSettingsMetadataArray.json"
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+    post:
+      operationId: setPreferredProfileSettings
+      tags:
+         - profile
+      description: Set the preferred profile settings for the profile
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "schema/profile/preferredProfileSettingsRequest.json"
+      responses:
+        '204':
+          description: Preferred profile settings created or updated successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+    delete:
+      operationId: deletePreferredProfileSettings
+      tags:
+         - profile
+      description: Delete the preferred profile settings for the profile
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '204':
+          description: Preferred profile settings deleted successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById
