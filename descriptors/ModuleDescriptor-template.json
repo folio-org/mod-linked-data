@@ -193,6 +193,21 @@
           "methods": [ "DELETE" ],
           "pathPattern": "/linked-data/profile/{profileId}/settings/{id}",
           "permissionsRequired": [ "linked-data.profiles.settings.delete" ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profile/{profileId}/preferred",
+          "permissionsRequired": [ "linked-data.profiles.settings.preferred.get" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/profile/{profileId}/preferred",
+          "permissionsRequired": [ "linked-data.profiles.settings.preferred.post" ]
+        },
+        {
+          "methods": [ "DELETE" ],
+          "pathPattern": "/linked-data/profile/{profileId}/preferred",
+          "permissionsRequired": [ "linked-data.profiles.settings.preferred.delete" ]
         }
       ]
     },
@@ -443,6 +458,21 @@
       "permissionName": "linked-data.profiles.settings.delete",
       "displayName": "Linked Data: Delete profile settings for the profile for the current user",
       "description": "Delete profile settings for the profile for the current user"
+    },
+    {
+      "permissionName": "linked-data.profiles.settings.preferred.get",
+      "displayName": "Linked Data: Get preferred workspace profile settings for the profile for the current user",
+      "description": "Get preferred workspace profile settings for the profile for the current user"
+    },
+    {
+      "permissionName": "linked-data.profiles.settings.preferred.post",
+      "displayName": "Linked Data: Create or update preferred profile settings for the profile for the current user",
+      "description": "Create or updated preferred profile settings for the profile for the current user"
+    },
+    {
+      "permissionName": "linked-data.profiles.settings.preferred.delete",
+      "displayName": "Linked Data: Delete preferred profile settings for the profile for the current user",
+      "description": "Delete preferred profile settings for the profile for the current user"
     },
     {
       "permissionName": "linked-data.resources.rdf.get",
