@@ -3,12 +3,12 @@ updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: daily
+      interval: "weekly"
+      day: "sunday"
     commit-message:
       prefix: fix
-      prefix-development: chore
       include: scope
-    reviewers:
-      - "pbobylev"
-      - "pkjacob"
-      - "zepheiryan"
+    groups:
+      all-deps:
+        patterns:
+          - "*"
