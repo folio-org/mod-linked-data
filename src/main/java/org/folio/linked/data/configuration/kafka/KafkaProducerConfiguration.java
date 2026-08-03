@@ -15,7 +15,7 @@ import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -117,7 +117,7 @@ public class KafkaProducerConfiguration {
     return getKafkaProducerFactory();
   }
 
-  private @NotNull <T> DefaultKafkaProducerFactory<String, T> getKafkaProducerFactory() {
+  private @NonNull <T> DefaultKafkaProducerFactory<String, T> getKafkaProducerFactory() {
     var properties = new HashMap<>(kafkaProperties.buildProducerProperties());
     Supplier<Serializer<String>> keySerializer = StringSerializer::new;
     Supplier<Serializer<T>> valueSerializer = () -> new JacksonJsonSerializer<>(JSON_MAPPER);
