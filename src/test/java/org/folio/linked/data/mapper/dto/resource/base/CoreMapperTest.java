@@ -191,7 +191,7 @@ class CoreMapperTest {
     var edgesAreExpected = source.getOutgoingEdges().stream().allMatch(edge ->
       edge.getPredicate().getHash().equals(predicate.getHash())
         && edge.getSource().equals(source)
-        && (edge.getTarget().equals(expectedTarget1)) || edge.getTarget().equals(expectedTarget2));
+        && edge.getTarget().equals(expectedTarget1) || edge.getTarget().equals(expectedTarget2));
     assertThat(edgesAreExpected, is(true));
   }
 

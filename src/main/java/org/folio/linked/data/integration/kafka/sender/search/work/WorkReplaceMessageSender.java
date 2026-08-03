@@ -49,11 +49,9 @@ public class WorkReplaceMessageSender implements ReplaceMessageSender {
   private void triggerParentWorkUpdate(Resource instance) {
     extractWorkFromInstance(instance)
       .ifPresentOrElse(work -> {
-          log.debug("Instance [id {}] replace triggered parent Work [{}] index update", instance.getId(), work.getId());
-          workUpdateMessageSender.produce(work);
-        },
-        () -> log.error("Instance [id {}] replaced, but parent work wasn't found!", instance.getId())
-      );
+        log.debug("Instance [id {}] replace triggered parent Work [{}] index update", instance.getId(), work.getId());
+        workUpdateMessageSender.produce(work);
+      }, () -> log.error("Instance [id {}] replaced, but parent work wasn't found!", instance.getId()));
   }
 
 }

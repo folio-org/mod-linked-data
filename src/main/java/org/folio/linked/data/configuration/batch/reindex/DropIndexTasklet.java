@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ReindexRequest;
 import org.folio.linked.data.integration.rest.search.SearchClient;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.StepContribution;
@@ -33,7 +32,7 @@ public class DropIndexTasklet implements Tasklet {
   private final SearchClient searchClient;
 
   @Override
-  public RepeatStatus execute(@NotNull StepContribution contribution, @NotNull ChunkContext chunkContext) {
+  public RepeatStatus execute(@NonNull StepContribution contribution, @NonNull ChunkContext chunkContext) {
     var isFullReindex = getParameter(chunkContext, JOB_PARAM_IS_FULL_REINDEX);
     if (parseBoolean(isFullReindex)) {
       var searchResourceType = getSearchResourceType(getParameter(chunkContext, JOB_PARAM_RESOURCE_TYPE));

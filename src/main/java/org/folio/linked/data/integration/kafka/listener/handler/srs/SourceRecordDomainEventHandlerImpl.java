@@ -57,8 +57,8 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
 
   private boolean notProcessableEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
     if (isEmpty(event.getEventPayload())
-      || isEmpty(event.getEventPayload().getParsedRecord())
-      || isEmpty(event.getEventPayload().getParsedRecord().getContent())) {
+        || isEmpty(event.getEventPayload().getParsedRecord())
+        || isEmpty(event.getEventPayload().getParsedRecord().getContent())) {
       log.warn(NO_MARC_EVENT, event.getId());
       return true;
     }
@@ -91,21 +91,19 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
 
   private boolean isLinkedDataBibCreateEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
     return recordType == MARC_BIB
-      && event.getEventType() == SOURCE_RECORD_CREATED
-      && hasElementByJsonPath(event.getEventPayload().getParsedRecord().getContent(), LINKED_DATA_ID_JSONPATH);
+           && event.getEventType() == SOURCE_RECORD_CREATED
+           && hasElementByJsonPath(event.getEventPayload().getParsedRecord().getContent(), LINKED_DATA_ID_JSONPATH);
   }
 
   private void saveAdminMetadata(SourceRecordDomainEvent event) {
     marcBib2ldMapper.fromMarcJson(event.getEventPayload().getParsedRecord().getContent())
       .ifPresentOrElse(mapped -> {
-          if (resourceMarcBibService.saveAdminMetadata(mapped)) {
-            log.debug("AdminMetadata has been added to resource with id [{}], SourceRecordDomainEvent id [{}]",
-              mapped.getId(), event.getId());
-          }
-        },
-        () -> log.info("SourceRecordDomainEvent with id [{}] doesn't contain AdminMetadata fields, skipping",
-          event.getId())
-      );
+        if (resourceMarcBibService.saveAdminMetadata(mapped)) {
+          log.debug("AdminMetadata has been added to resource with id [{}], SourceRecordDomainEvent id [{}]",
+            mapped.getId(), event.getId());
+        }
+      }, () -> log.info("SourceRecordDomainEvent with id [{}] doesn't contain AdminMetadata fields, skipping",
+        event.getId()));
   }
 
   private void logUnsupportedType(SourceRecordDomainEvent event, String typeKind, Enum<?> type) {
@@ -115,5 +113,4 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private void logEmptyResource(String eventId) {
     log.info(EMPTY_RESOURCE_MAPPED, eventId);
   }
-
 }
