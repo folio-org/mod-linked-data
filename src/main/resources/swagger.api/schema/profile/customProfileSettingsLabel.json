@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Custom profile settings label",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the workspace custom profile settings",
+      "x-field-extra-annotation": "@jakarta.validation.constraints.NotBlank"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
