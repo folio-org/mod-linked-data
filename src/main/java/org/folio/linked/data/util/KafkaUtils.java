@@ -1,6 +1,5 @@
 package org.folio.linked.data.util;
 
-import static java.util.Optional.ofNullable;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 
 import java.util.Optional;
@@ -14,8 +13,12 @@ import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 public class KafkaUtils {
 
   public static Optional<String> getHeaderValueByName(ConsumerRecord<String, ?> consumerRecord, String headerName) {
-    return ofNullable(consumerRecord.headers().lastHeader(headerName))
-      .map(header -> new String(header.value()));
+    for (var header : consumerRecord.headers()) {
+      if (header.key().equalsIgnoreCase(headerName)) {
+        return Optional.of(new String(header.value()));
+      }
+    }
+    return Optional.empty();
   }
 
   public static <T> void handleForExistedTenant(ConsumerRecord<String, T> consumerRecord,

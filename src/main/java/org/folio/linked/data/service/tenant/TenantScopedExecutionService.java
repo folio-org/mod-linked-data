@@ -55,7 +55,7 @@ public class TenantScopedExecutionService {
 
   private FolioExecutionContext folioContextFromKafkaHeadersNoToken(Headers headers) {
     Map<String, Object> okapiHeaders = Arrays.stream(headers.toArray())
-      .filter(header -> !TOKEN.equals(header.key()))
+      .filter(header -> !TOKEN.equalsIgnoreCase(header.key()))
       .collect(toMap(
         Header::key,
         Header::value,

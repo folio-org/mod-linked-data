@@ -44,4 +44,22 @@ class KafkaUtilsTest {
       .isPresent()
       .contains(headerValue);
   }
+
+  @Test
+  void getHeaderValueByName_shouldReturnOptionalWithHeader_ifHeaderKeyDiffersByCase() {
+    // given
+    var headerKey = "headerKey";
+    var headerValue = UUID.randomUUID().toString();
+    var consumerRecord = new ConsumerRecord<>("topic", 1, 1, "key", "value");
+    var headers = new RecordHeaders(List.of(new RecordHeader(headerKey.toUpperCase(), headerValue.getBytes())));
+    ReflectionTestUtils.setField(consumerRecord, "headers", headers);
+
+    // when
+    var result = KafkaUtils.getHeaderValueByName(consumerRecord, headerKey);
+
+    // then
+    assertThat(result)
+      .isPresent()
+      .contains(headerValue);
+  }
 }
