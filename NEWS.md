@@ -1,10 +1,29 @@
-## 3.0.0 (IN PROGRESS)
-- Update order of fields for Title in profiles. [MODLD-1090](https://folio-org.atlassian.net/browse/MODLD-1090)
-- Standalone Authority resource CRUD API [MODLD-1082](https://folio-org.atlassian.net/browse/MODLD-1082)
-- Authority index message sending [MODLD-1099](https://folio-org.atlassian.net/browse/MODLD-1099)
-- Update profile settings to allow for multiple settings per profile [MODLD-1040](https://folio-org.atlassian.net/browse/MODLD-1040)
-- Update some Authority profile MARC tooltips [MODLD-1083](https://folio-org.atlassian.net/browse/MODLD-1083)
-- Authority API Validation: Name is required field [MODLD-1107](https://folio-org.atlassian.net/browse/MODLD-1107)
+## v3.0.0 (IN PROGRESS)
+### Breaking changes
+* Description ([ISSUE](https://folio-org.atlassian.net/browse/ISSUE))
+
+### New APIs versions
+* Provides `API_NAME vX.Y`
+* Requires `API_NAME vX.Y`
+
+### Features
+* Update order of fields for Title in profiles. [MODLD-1090](https://folio-org.atlassian.net/browse/MODLD-1090)
+* Standalone Authority resource CRUD API [MODLD-1082](https://folio-org.atlassian.net/browse/MODLD-1082)
+* Authority index message sending [MODLD-1099](https://folio-org.atlassian.net/browse/MODLD-1099)
+* Update profile settings to allow for multiple settings per profile [MODLD-1040](https://folio-org.atlassian.net/browse/MODLD-1040)
+* Update some Authority profile MARC tooltips [MODLD-1083](https://folio-org.atlassian.net/browse/MODLD-1083)
+* Authority API Validation: Name is required field [MODLD-1107](https://folio-org.atlassian.net/browse/MODLD-1107)
+
+### Bug fixes
+* Improve case-insensitive handling of Kafka headers ([MODLD-1117](https://folio-org.atlassian.net/browse/MODLD-1117))
+
+### Tech Dept
+* Description ([ISSUE](https://folio-org.atlassian.net/browse/ISSUE))
+
+### Dependencies
+* Bump `LIB_NAME` from `OLD_VERSION` to `NEW_VERSION`
+* Add `LIB_NAME VERSION`
+* Remove `LIB_NAME`
 
 ## 2.0.3 (02-06-2026)
 - Exclude LIGHT_RESOURCE from reindexing [MODLD-1071](https://folio-org.atlassian.net/browse/MODLD-1071)

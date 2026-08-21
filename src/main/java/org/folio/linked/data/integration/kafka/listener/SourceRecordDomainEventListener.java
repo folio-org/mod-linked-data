@@ -10,6 +10,7 @@ import static org.folio.spring.integration.XOkapiHeaders.URL;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -75,7 +76,7 @@ public class SourceRecordDomainEventListener {
 
   private boolean notAllRequiredHeaders(Headers headers) {
     return !REQUIRED_HEADERS.stream()
-      .map(required -> headers.headers(required).iterator())
-      .allMatch(iterator -> iterator.hasNext() && iterator.next().value().length > 0);
+      .allMatch(required -> StreamSupport.stream(headers.spliterator(), false)
+        .anyMatch(h -> h.key().equalsIgnoreCase(required) && h.value().length > 0));
   }
 }
