@@ -10,7 +10,6 @@
 * Update order of fields for Title in profiles. [MODLD-1090](https://folio-org.atlassian.net/browse/MODLD-1090)
 * Standalone Authority resource CRUD API [MODLD-1082](https://folio-org.atlassian.net/browse/MODLD-1082)
 * Authority index message sending [MODLD-1099](https://folio-org.atlassian.net/browse/MODLD-1099)
-* Update profile settings to allow for multiple settings per profile [MODLD-1040](https://folio-org.atlassian.net/browse/MODLD-1040)
 * Update some Authority profile MARC tooltips [MODLD-1083](https://folio-org.atlassian.net/browse/MODLD-1083)
 * Authority API Validation: Name is required field [MODLD-1107](https://folio-org.atlassian.net/browse/MODLD-1107)
 
@@ -24,6 +23,9 @@
 * Bump `LIB_NAME` from `OLD_VERSION` to `NEW_VERSION`
 * Add `LIB_NAME VERSION`
 * Remove `LIB_NAME`
+
+## 2.0.4 (17-08-2026)
+* Update profile settings to allow for multiple settings per profile [MODLD-1040](https://folio-org.atlassian.net/browse/MODLD-1040)
 
 ## 2.0.3 (02-06-2026)
 - Exclude LIGHT_RESOURCE from reindexing [MODLD-1071](https://folio-org.atlassian.net/browse/MODLD-1071)
