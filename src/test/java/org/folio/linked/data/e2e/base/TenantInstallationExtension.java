@@ -27,10 +27,13 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   @SneakyThrows
   @Override
   public void beforeEach(ExtensionContext extensionContext) {
+    log.info("Tenant installation: starting.");
     if (!init) {
+      log.info("Tenant installation: not initialized yet. Proceeding...");
       var context = SpringExtension.getApplicationContext(extensionContext);
       var env = context.getEnvironment();
       if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
+        log.info("Tenant installation: Profile is not standalone. Proceeding...");
         var mockMvc = context.getBean(MockMvc.class);
         mockMvc.perform(post(TENANT_ENDPOINT_URI, TENANT_ID)
             .content(TEST_JSON_MAPPER.writeValueAsString(
@@ -39,8 +42,9 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
             .headers(defaultHeaders(env))
             .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent());
+        log.info("Tenant installation: completed for tenant {}", TENANT_ID);
+        init = true;
       }
-      init = true;
     }
   }
 
