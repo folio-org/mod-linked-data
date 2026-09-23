@@ -33,7 +33,8 @@ public class InventoryInstanceEventListener {
     containerFactory = INVENTORY_EVENT_LISTENER_CONTAINER_FACTORY,
     groupId = "#{folioKafkaProperties.listener['inventory-instance-event'].groupId}",
     concurrency = "#{folioKafkaProperties.listener['inventory-instance-event'].concurrency}",
-    topicPattern = "#{folioKafkaProperties.listener['inventory-instance-event'].topicPattern}")
+    topicPattern = "#{folioKafkaProperties.listener['inventory-instance-event'].topicPattern}",
+    filter = "tenantAwareMessageFilter")
   public void handleInventoryInstanceEvent(List<ConsumerRecord<String, InventoryInstanceEvent>> consumerRecords) {
     consumerRecords.forEach(consumerRecord -> {
       var event = consumerRecord.value();

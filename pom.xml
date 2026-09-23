@@ -77,6 +77,12 @@
 
     <dependency>
       <groupId>org.folio</groupId>
+      <artifactId>folio-spring-kafka</artifactId>
+      <version>${folio-spring-base.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.folio</groupId>
       <artifactId>folio-service-tools-spring-dev</artifactId>
       <version>${folio-service-tools.version}</version>
     </dependency>

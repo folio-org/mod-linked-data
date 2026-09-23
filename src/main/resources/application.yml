@@ -1,6 +1,7 @@
 spring:
   application:
     name: mod-linked-data
+    version: ${MODULE_VERSION:@project.version@}
   batch:
     jdbc:
       initialize-schema: never
@@ -59,19 +60,25 @@ folio:
       enabled: true
     level: BASIC
   kafka:
+    tenant-filter:
+      enabled: ${KAFKA_TENANT_FILTER_ENABLED:false}
+      ignore-empty-batch: true
+      tenant-disabled-strategy: ${KAFKA_TENANT_FILTER_TENANT_DISABLED_STRATEGY:skip}
+      all-tenants-disabled-strategy: ${KAFKA_TENANT_FILTER_ALL_TENANTS_DISABLED_STRATEGY:fail}
+      entitlement-refresh-interval-seconds: ${KAFKA_TENANT_FILTER_ENTITLEMENT_REFRESH_INTERVAL_SECONDS:900}
     listener:
       source-record-domain-event:
         concurrency: ${KAFKA_SOURCE_RECORD_DOMAIN_EVENT_CONCURRENCY:1}
         topic-pattern: ${KAFKA_SOURCE_RECORD_DOMAIN_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)srs.source_records}
-        group-id: ${folio.environment}-linked-data-source-record-domain-event-group
+        group-id: ${folio.environment}-linked-data-source-record-domain-event-group-${spring.application.version}
       inventory-instance-event:
         concurrency: ${KAFKA_INVENTORY_INSTANCE_EVENT_CONCURRENCY:1}
         topic-pattern: ${KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)inventory.instance}
-        group-id: ${folio.environment}-linked-data-inventory-instance-event-group
+        group-id: ${folio.environment}-linked-data-inventory-instance-event-group-${spring.application.version}
       ld-import-output-event:
         concurrency: ${KAFKA_LD_IMPORT_OUTPUT_EVENT_CONCURRENCY:1}
         topic-pattern: ${KAFKA_LD_IMPORT_OUTPUT_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)linked_data_import.output}
-        group-id: ${folio.environment}-linked-data-import-output-event-group
+        group-id: ${folio.environment}-linked-data-import-output-event-group-${spring.application.version}
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:0}
     topics:

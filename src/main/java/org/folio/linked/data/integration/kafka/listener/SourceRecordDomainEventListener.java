@@ -42,7 +42,8 @@ public class SourceRecordDomainEventListener {
     containerFactory = "srsEventListenerContainerFactory",
     groupId = "#{folioKafkaProperties.listener['source-record-domain-event'].groupId}",
     concurrency = "#{folioKafkaProperties.listener['source-record-domain-event'].concurrency}",
-    topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}")
+    topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}",
+    filter = "tenantAwareMessageFilter")
   public void handleSourceRecordDomainEvent(List<ConsumerRecord<String, SourceRecordDomainEvent>> consumerRecords) {
     consumerRecords.forEach(consumerRecord -> {
       var event = consumerRecord.value();

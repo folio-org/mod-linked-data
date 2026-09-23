@@ -34,7 +34,8 @@ public class LdImportOutputEventListener {
     containerFactory = CONTAINER_FACTORY,
     groupId = "#{folioKafkaProperties.listener['ld-import-output-event'].groupId}",
     concurrency = "#{folioKafkaProperties.listener['ld-import-output-event'].concurrency}",
-    topicPattern = "#{folioKafkaProperties.listener['ld-import-output-event'].topicPattern}")
+    topicPattern = "#{folioKafkaProperties.listener['ld-import-output-event'].topicPattern}",
+    filter = "tenantAwareMessageFilter")
   public void handleImportOutputEvents(List<ConsumerRecord<String, ImportOutputEvent>> consumerRecords) {
     consumerRecords.forEach(consumerRecord -> {
       var event = consumerRecord.value();
