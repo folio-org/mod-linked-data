@@ -1,3 +1,6 @@
+## 2.0.4 (17-08-2026)
+- Update profile settings to allow for multiple settings per profile [MODLD-1040](https://folio-org.atlassian.net/browse/MODLD-1040)
+
 ## 2.0.3 (02-06-2026)
 - Exclude LIGHT_RESOURCE from reindexing [MODLD-1071](https://folio-org.atlassian.net/browse/MODLD-1071)
 - Fix Instance loses association with Work when Work profile is changed [MODLD-1072](https://folio-org.atlassian.net/browse/MODLD-1072)

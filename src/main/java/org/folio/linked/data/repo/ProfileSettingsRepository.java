@@ -1,11 +1,17 @@
 package org.folio.linked.data.repo;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.linked.data.model.entity.ProfileSettings;
-import org.folio.linked.data.model.entity.pk.ProfileSettingsPk;
 import org.springframework.data.repository.CrudRepository;
 
-public interface ProfileSettingsRepository extends CrudRepository<ProfileSettings, ProfileSettingsPk> {
-  Optional<ProfileSettings> getByIdUserIdAndIdProfileId(UUID userId, Integer profileId);
+public interface ProfileSettingsRepository extends CrudRepository<ProfileSettings, Integer> {
+  List<ProfileSettings> findByUserIdAndProfileId(UUID userId, Integer profileId);
+
+  Optional<ProfileSettings> findByIdAndUserId(Integer id, UUID userId);
+
+  Boolean existsByUserIdAndProfileIdAndName(UUID userId, Integer profileId, String name);
+
+  void deleteByIdAndProfileIdAndUserId(Integer id, Integer profileId, UUID userId);
 }

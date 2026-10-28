@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfileSettingsPk implements Serializable {
+public class PreferredProfileSettingsPk implements Serializable {
 
   @Column(name = "user_id", nullable = false)
   private UUID userId;

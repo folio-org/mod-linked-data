@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Preferred profile settings request schema",
+  "type": "object",
+  "properties": {
+    "profileSettingsId": {
+      "type": "integer",
+      "format": "int16",
+      "description": "ID of the profile settings"
+    }
+  },
+  "required": [
+    "profileSettingsId"
+  ]
+}
